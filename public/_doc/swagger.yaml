@@ -1,0 +1,55 @@
+swagger: '2.0'
+info:
+  description: IBM WatsonX サンプル API ドキュメント
+  version: 0.0.1
+  title: WatsonX サンプル REST APIs
+basePath: /api
+tags:
+  - name: watsonx
+    description: IBM WatsonX API
+schemes:
+  - http
+  - https
+paths:
+  /generate_text:
+    post:
+      tags:
+        - watsonx
+      summary: Generate Text
+      description: Text Generation API
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: apikey
+          in: formData
+          type: string
+          description: IAM API キー
+#          required: true
+        - name: project_id
+          in: formData
+          type: string
+          description: プロジェクトID
+#          required: true
+        - name: model_id
+          in: formData
+          type: string
+          description: モデルID
+#          required: true
+        - name: input
+          in: formData
+          type: string
+          description: プロンプトテキスト
+          required: true
+#          default: 日本語に翻訳してください\n\n入力:\nAbout Watson Discovery\\nIBM Watson® Discovery is an intelligent document processing engine that helps you to gain insights from complex business documents.\n翻訳\n
+          default: 入力:\nAbout Watson Discovery\\nIBM Watson® Discovery is an intelligent document processing engine that helps you to gain insights from complex business documents.\n翻訳\n
+        - name: max_new_tokens
+          in: formData
+          type: integer
+          description: 最大トークン数 (Default=100)
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
