@@ -1,7 +1,8 @@
 var flag_speech = 0;
+var flag_debug = false;
 
 function vr_function(){
-  $('#start_btn').removeClass( 'btn-primary' );
+  $('#start_btn').removeClass( 'btn-primary btn-warning' );
   $('#start_btn').addClass( 'btn-danger' );
   $('#start_btn').val( '■' );
 
@@ -12,24 +13,45 @@ function vr_function(){
   recognition.interimResults = false;
   recognition.continuous = false;
 
-  recognition.onsoundstart = function(){
+  recognition.onaudiostart = function(){
+    if( flag_debug ){ console.log( 'onaudiostart' ); }
+  };
+  recognition.onaudioend = function(){
+    if( flag_debug ){ console.log( 'onaudioend' ); }
+  };
+  recognition.onspeechstart = function(){
+    if( flag_debug ){ console.log( 'onspeechstart' ); }
     $('#status').val( 'Listening' );
   };
+  recognition.onspeechend = function(){
+    if( flag_debug ){ console.log( 'onspeechend' ); }
+    $('#status').val( 'Stopping..' );
+    ///vr_function();
+  };
+
+  recognition.onsoundstart = function(){
+    if( flag_debug ){ console.log( 'onsoundstart' ); }
+    //$('#status').val( 'Listening' );
+  };
   recognition.onnomatch = function(){
+    if( flag_debug ){ console.log( 'onnomatch' ); }
     $('#status').val( 'Try once more' );
   };
   recognition.onerror = function(){
+    if( flag_debug ){ console.log( 'onerror' ); }
     $('#status').val( 'Error' );
     if( flag_speech == 0 ){
       vr_function();
     }
   };
   recognition.onsoundend = function(){
-    $('#status').val( 'Stopping..' );
+    if( flag_debug ){ console.log( 'onsoundend' ); }
+    //$('#status').val( 'Stopping..' );
     ///vr_function();
   };
 
   recognition.onresult = function( event ){
+    if( flag_debug ){ console.log( 'onresult' ); }
     var results = event.results;
     for( var i = event.resultIndex; i < results.length; i++ ){
       if( results[i].isFinal ){
@@ -74,6 +96,10 @@ function AiChat( text ){
       obj.remove();
       obj = null;
       console.log( e0, e1, e2 );
+
+      $('#start_btn').removeClass( 'btn-warning btn-danger' );
+      $('#start_btn').addClass( 'btn-primary' );
+      $('#start_btn').val( 'Chat' );
     }
   })
 }
@@ -94,6 +120,10 @@ function speechText( text ){
     uttr.text = text;
     uttr.lang = 'en-US'; //'ja-JP';
 
+    $('#start_btn').removeClass( 'btn-primary btn-danger' );
+    $('#start_btn').addClass( 'btn-warning' );
+    $('#start_btn').val( 'Speech' );
+
     window.speechSynthesis.speak( uttr );
     uttr.onend = speechEnd;
   }else{
@@ -102,6 +132,13 @@ function speechText( text ){
 }
 
 function speechEnd( evt ){
-  console.log( 'speechEnd', {evt} );
-  vr_function();
+  if( flag_debug ){ console.log( 'speechEnd', {evt} ); }
+
+  //. AI の発声後、すぐに聞き取りモードに入らせる場合
+  //vr_function();  
+
+  //. 再度ボタンを押させる場合
+  $('#start_btn').removeClass( 'btn-warning btn-danger' );
+  $('#start_btn').addClass( 'btn-primary' );
+  $('#start_btn').val( 'Chat' );
 }
