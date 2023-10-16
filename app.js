@@ -196,14 +196,16 @@ const progressingChatCompletion = async ( option ) => {
 
 app.post( '/api/generate_text', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
+  console.log( req.body );
 
   var apikey = ( req.body.apikey ? req.body.apikey : settings_apikey );
 
+  var ai = req.body.ai ? req.body.ai : settings_ai;
   var input = req.body.input;
   var max_new_tokens = ( req.body.max_new_tokens ? parseInt( req.body.max_new_tokens ) : 100 );
 
   try{
-    switch( settings_ai ){
+    switch( ai ){
     case 'watsonx':
       var project_id = ( req.body.project_id ? req.body.project_id : settings_project_id );
       var model_id = ( req.body.model_id ? req.body.model_id : settings_model_id );

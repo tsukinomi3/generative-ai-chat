@@ -4,7 +4,7 @@ var flag_debug = false;
 function vr_function(){
   $('#start_btn').removeClass( 'btn-primary btn-warning' );
   $('#start_btn').addClass( 'btn-danger' );
-  $('#start_btn').val( '■' );
+  $('#start_btn').val( '<i class="fas fa-microphone"></i>' );
 
   //. https://developer.mozilla.org/ja/docs/Web/API/SpeechRecognition
   window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
@@ -75,10 +75,11 @@ function vr_function(){
 function AiChat( text ){
   $('#result_text').css( 'display', 'none' );
   var obj = getBusyOverlay( 'viewport', { color:'black', opacity:0.5, text:'thinking..', style:'text-decoration:blink;font-weight:bold;font-size:12px;color:white' } );
+  var ai = $('#ai-type').val();
   $.ajax({
     type: 'POST',
     url: '/api/generate_text',
-    data: { input: text },
+    data: { input: text, ai: ai },
     success: function( result ){
       obj.remove();
       obj = null;
@@ -99,7 +100,7 @@ function AiChat( text ){
 
       $('#start_btn').removeClass( 'btn-warning btn-danger' );
       $('#start_btn').addClass( 'btn-primary' );
-      $('#start_btn').val( 'Chat' );
+      $('#start_btn').val( '<i class="fas fa-comment-alt"></i>' );
     }
   })
 }
@@ -122,7 +123,7 @@ function speechText( text ){
 
     $('#start_btn').removeClass( 'btn-primary btn-danger' );
     $('#start_btn').addClass( 'btn-warning' );
-    $('#start_btn').val( 'Speech' );
+    $('#start_btn').val( '<i class="fas fa-comments"></i>' );
 
     window.speechSynthesis.speak( uttr );
     uttr.onend = speechEnd;
@@ -140,5 +141,5 @@ function speechEnd( evt ){
   //. 再度ボタンを押させる場合
   $('#start_btn').removeClass( 'btn-warning btn-danger' );
   $('#start_btn').addClass( 'btn-primary' );
-  $('#start_btn').val( 'Chat' );
+  $('#start_btn').val( '<i class="fas fa-comment-alt"></i>' );
 }
