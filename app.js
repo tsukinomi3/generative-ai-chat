@@ -12,10 +12,12 @@ require( 'dotenv' ).config();
 //. env values
 var settings_ai = 'AI' in process.env ? process.env.AI : 'watsonx'; 
 
-var settings_apikey = 'API_KEY' in process.env ? process.env.API_KEY : ''; 
-var settings_project_id = 'PROJECT_ID' in process.env ? process.env.PROJECT_ID : ''; 
-var settings_model_id = 'MODEL_ID' in process.env ? process.env.MODEL_ID : ''; 
-var settings_organization = 'ORGANIZATION' in process.env ? process.env.ORGANIZATION : '';
+var settings_watsonx_apikey = 'WATSONX_API_KEY' in process.env ? process.env.WATSONX_API_KEY : ''; 
+var settings_watsonx_project_id = 'WATSONX_PROJECT_ID' in process.env ? process.env.WATSONX_PROJECT_ID : ''; 
+var settings_watsonx_model_id = 'WATSONX_MODEL_ID' in process.env ? process.env.WATSONX_MODEL_ID : ''; 
+var settings_openai_apikey = 'OPENAI_API_KEY' in process.env ? process.env.OPENAI_API_KEY : ''; 
+var settings_openai_organization = 'OPENAI_ORGANIZATION' in process.env ? process.env.OPENAI_ORGANIZATION : '';
+var settings_openai_model_id = 'OPENAI_MODEL_ID' in process.env ? process.env.OPENAI_MODEL_ID : ''; 
 
 var settings_port = 'PORT' in process.env ? process.env.PORT : 8080; 
 var settings_cors = 'CORS' in process.env ? process.env.CORS : ''; 
@@ -198,8 +200,6 @@ app.post( '/api/generate_text', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   console.log( req.body );
 
-  var apikey = ( req.body.apikey ? req.body.apikey : settings_apikey );
-
   var ai = req.body.ai ? req.body.ai : settings_ai;
   var input = req.body.input;
   var max_new_tokens = ( req.body.max_new_tokens ? parseInt( req.body.max_new_tokens ) : 100 );
@@ -207,8 +207,9 @@ app.post( '/api/generate_text', async function( req, res ){
   try{
     switch( ai ){
     case 'watsonx':
-      var project_id = ( req.body.project_id ? req.body.project_id : settings_project_id );
-      var model_id = ( req.body.model_id ? req.body.model_id : settings_model_id );
+      var apikey = ( req.body.apikey ? req.body.apikey : settings_watsonx_apikey );
+      var project_id = ( req.body.project_id ? req.body.project_id : settings_watsonx_project_id );
+      var model_id = ( req.body.model_id ? req.body.model_id : settings_watsonx_model_id );
       if( apikey && project_id && model_id && input && max_new_tokens ){
         var result0 = await getAccessToken( apikey );
         if( result0 && result0.status && result0.access_token ){
@@ -247,12 +248,13 @@ app.post( '/api/generate_text', async function( req, res ){
 
       break;
     case 'openai':
-      var organization = ( req.body.organization ? req.body.organization : settings_organization );
-      var configuration = new Configuration({ apiKey: settings_apikey, organization: settings_organization });
+      var apikey = ( req.body.apikey ? req.body.apikey : settings_openai_apikey );
+      var organization = ( req.body.organization ? req.body.organization : settings_openai_organization );
+      var configuration = new Configuration({ apiKey: apikey, organization: organization });
       openai = new OpenAIApi( configuration );
 
       //var model = ( req.body.model ? req.body.model : 'text-davinci-003' );
-      var model = ( req.body.model ? req.body.model : 'gpt-3.5-turbo-instruct' );
+      var model = ( req.body.model ? req.body.model : settings_openai_model_id );
       //var prompt = req.body.prompt;
 
       var option = {
@@ -300,6 +302,7 @@ app.post( '/api/generate_text', async function( req, res ){
       break;
     }
   }catch( err ){
+    console.log( {err} );
     res.status( 400 )
     res.write( JSON.stringify( { status: false, error: err }, null, 2 ) );
     res.end();
