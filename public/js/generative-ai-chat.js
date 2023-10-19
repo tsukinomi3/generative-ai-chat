@@ -75,11 +75,13 @@ function vr_function(){
 function AiChat( text ){
   $('#result_text').css( 'display', 'none' );
   var obj = getBusyOverlay( 'viewport', { color:'black', opacity:0.5, text:'thinking..', style:'text-decoration:blink;font-weight:bold;font-size:12px;color:white' } );
-  var ai = $('#ai-type').val();
+  //var ai = $('#ai-type').val();
+  var model_id = $('#model_id').val();
+  var ai = ( model_id == 'gpt-3.5-turbo-instruct' ) ? 'openai' : 'watsonx';
   $.ajax({
     type: 'POST',
     url: '/api/generate_text',
-    data: { input: text, ai: ai },
+    data: { input: text, ai: ai, model_id: model_id },
     success: function( result ){
       obj.remove();
       obj = null;

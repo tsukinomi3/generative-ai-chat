@@ -29,12 +29,14 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto"></ul>
+    <!--
     <form class="form-inline my-2 my-lg-0">
       <select class="form-inline" id="ai-type">
         <option value="watsonx" selected>WatsonX</option>
         <option value="openai">OpenAI</option>
       </select>
     </form>
+    -->
   </div>
 </nav>
 
@@ -58,7 +60,24 @@
         </td>
         <td style="width:200px" id="td-ai">
           <p style="height:100px;"></p>
+          <p>
+          <form class="form-inline my-2 my-lg-0">
+            <select class="form-inline" id="model_id">
+              <option value="gpt-3.5-turbo-instruct" selected>gpt-3.5-turbo-instruct</option>
+              <option value="google/flan-ul2">flan-ul2-20b</option>
+              <option value="bigcode/starcoder">starcoder-15.5b</option>
+              <option value="bigscience/mt0-xxl">mt0-xxl-13b</option>
+              <option value="eleutherai/gpt-neox-20b">gpt-neox-20b</option>
+              <option value="google/flan-t5-xxl">flan-t5-xxl-11b</option>
+              <option value="ibm/granite-13b-chat-v1">granite-13b-chat-v1</option>
+              <option value="ibm/granite-13b-instruct-v1">granite-13b-instruct-v1</option>
+              <option value="ibm/mpt-7b-instruct2">mpt-7b-instruct2</option>
+              <option value="meta-llama/llama-2-70b-chat">llama-2-70b-chat</option>
+            </select>
+          </form>
+          </p>
           <img src="/imgs/ai1.png" width="190"/>
+          </div>
         </td>
       </tr>
     </tbody>

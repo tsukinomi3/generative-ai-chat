@@ -65,6 +65,28 @@
   border-bottom: 15px solid transparent;
 }
 
+.box{
+  position: relative;
+  width: 800px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.box-bottom{
+  width: 190px;
+}
+
+.box-top{
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translateY(-50%);
+  width: 100px;
+  height: auto;
+  line-height: 1.5;
+  padding: 20px;
+}
+
 #for-debug{
   display: none;
 }

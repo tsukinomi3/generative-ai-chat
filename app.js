@@ -254,11 +254,11 @@ app.post( '/api/generate_text', async function( req, res ){
       openai = new OpenAIApi( configuration );
 
       //var model = ( req.body.model ? req.body.model : 'text-davinci-003' );
-      var model = ( req.body.model ? req.body.model : settings_openai_model_id );
+      var model_id = ( req.body.model_id ? req.body.model_id : settings_openai_model_id );
       //var prompt = req.body.prompt;
 
       var option = {
-        model: model,
+        model: model_id,
         prompt: input,
         max_tokens: max_new_tokens
       };
