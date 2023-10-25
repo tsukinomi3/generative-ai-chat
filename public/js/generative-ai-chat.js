@@ -71,7 +71,7 @@ function vr_function(){
   $('#status').val( "start" );
   recognition.start();
 }
-
+var conversation = "";
 function AiChat( text ){
   $('#result_text').css( 'display', 'none' );
   var obj = getBusyOverlay( 'viewport', { color:'black', opacity:0.5, text:'thinking..', style:'text-decoration:blink;font-weight:bold;font-size:12px;color:white' } );
@@ -81,16 +81,18 @@ function AiChat( text ){
   $.ajax({
     type: 'POST',
     url: '/api/generate_text',
-    data: { input: text, ai: ai, model_id: model_id },
+    data: { pc: conversation, input: text, ai: ai, model_id: model_id },
     success: function( result ){
+      conversation += "[User] " + text + "\n";
       obj.remove();
       obj = null;
       //console.log( { result } );
       if( result && result.status ){
-        var text = result.generated_text;
-        if( text ){
-          $('#result_texts').append( '<div class="balloon-r">' + text + '</div>' );
-          speechText( text );
+        var ai_text = result.generated_text;
+        conversation += "[Friendly Assistant]" + ai_text + "\n";
+        if( ai_text ){
+          $('#result_texts').append( '<div class="balloon-r">' + ai_text + '</div>' );
+          speechText( ai_text );
         }
       }
     },
