@@ -9,6 +9,11 @@ var express = require( 'express' ),
 
 require( 'dotenv' ).config();
 
+// Test Prompts
+var instruction = "[INST] <<SYS>>\nYou are a friendly, respectful and honest friend. Always answer as friendly as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. Also try to ask something for me, not try to help me.\n\nIf a question does not make any sense, or is not factually coherent, tell that you don't understand that well. If you don't know the answer to a question, please don't share false information.\n\nYou are an English speaker.\nIf you are asked a question in Japanese, please answer that you don't understand Japanese, and if you are asked a question in English, please answer in English.\n\nThe user is at beginner level of English, so please answer in easy and SHORT English sentence as much as possible. Also you don't speak so much.\n\nHave [Past Conversation] in your mind. Answer the bottom [User] section, but in 80 words.\n</SYS>>\n[/INST]\n"
+var user_input = "[User] "
+var answer_output = "\n[Friendly Assistant] \n"
+
 //. env values
 var settings_ai = 'AI' in process.env ? process.env.AI : 'watsonx'; 
 
@@ -63,6 +68,9 @@ app.get( '/', function( req, res ){
   res.render( 'index', {} );
 });
 
+app.get( '/text_chat', function( req, res ){
+  res.render( 'text_chat', {} );
+});
 
 async function getAccessToken( apikey ){
   return new Promise( function( resolve, reject ){
@@ -82,7 +90,7 @@ async function getAccessToken( apikey ){
       axios.post( '/identity/token', params )
       .then( function( result ){
         if( result && result.data && result.data.access_token ){
-          //console.log( 'access_token = ' + result.data.access_token );
+          // console.log( 'access_token = ' + result.data.access_token );
           resolve( { status: true, access_token: result.data.access_token } );
         }else{
           resolve( { status: true, access_token: result.data.access_token } );
@@ -97,8 +105,7 @@ async function getAccessToken( apikey ){
     }
   });
 }
-
-async function generateText( access_token, project_id, model_id, input, max_new_tokens ){
+async function generateText( access_token, project_id, model_id, pc, input, max_new_tokens ){
   return new Promise( function( resolve, reject ){
     if( access_token ){
       if( project_id && input && max_new_tokens ){
@@ -113,7 +120,7 @@ async function generateText( access_token, project_id, model_id, input, max_new_
         });
         var data = {
           'model_id': model_id,
-          'input': input,
+          'input': instruction + "\n[Past Conversation]\n" + pc + "\n[/Past Conversation]\n" + user_input + input + answer_output,
           'parameters': {
             "decoding_method": "greedy",
             "max_new_tokens": max_new_tokens,
@@ -202,6 +209,7 @@ app.post( '/api/generate_text', async function( req, res ){
 
   var ai = req.body.ai ? req.body.ai : settings_ai;
   var input = req.body.input;
+  var pc = req.body.pc; // 過去の会話 Past Conversation
   var max_new_tokens = ( req.body.max_new_tokens ? parseInt( req.body.max_new_tokens ) : 100 );
 
   try{
@@ -213,7 +221,7 @@ app.post( '/api/generate_text', async function( req, res ){
       if( apikey && project_id && model_id && input && max_new_tokens ){
         var result0 = await getAccessToken( apikey );
         if( result0 && result0.status && result0.access_token ){
-          var result = await generateText( result0.access_token, project_id, model_id, input, max_new_tokens );
+          var result = await generateText( result0.access_token, project_id, model_id, pc, input, max_new_tokens );
           if( result && result.status ){
             var results = result.results;
             if( results && results[0] && results[0].generated_text ){
